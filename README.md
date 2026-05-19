@@ -115,6 +115,18 @@ To run clustering on a precomputed feature table:
 python3 scripts/run_clustering.py --features-path results/tables/frame_features_normal_smoke.csv --condition normal --output-dir results/tables
 ```
 
+To build consensus graphs, interpretation tables, and figures:
+
+```bash
+python3 scripts/interpret_clusters.py --base-dir data/phase3A/phase3aexports --condition normal --labels-path results/tables/cluster_labels_normal.csv --features-path results/tables/frame_features_normal.csv --pca-path results/tables/pca_projection_normal.csv --threshold 0.5 --output-dir results
+```
+
+To print a concise textual summary of clustering outputs:
+
+```bash
+python3 scripts/summarize_clustering.py --condition normal --scores-path results/tables/clustering_scores_normal.csv --labels-path results/tables/cluster_labels_normal.csv --features-path results/tables/frame_features_normal.csv --residue-centrality-path results/tables/residue_centrality_normal.csv
+```
+
 Full graph construction, clustering, and centrality calculations may be
 expensive. Run them deliberately after the data diagnostics pass.
 
