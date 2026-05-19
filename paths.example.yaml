@@ -1,0 +1,4 @@
+phase3a_dir: data/phase3A/phase3aexports
+phase3b_dir: data/phase3B/phase3boutputs
+results_dir: results
+default_condition: normal

@@ -1,0 +1,11 @@
+pandas
+numpy
+networkx
+scikit-learn
+scipy
+matplotlib
+seaborn
+pyarrow
+tqdm
+ipykernel
+notebook
