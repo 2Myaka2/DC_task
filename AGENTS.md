@@ -20,6 +20,13 @@ Ignored local directories:
 - data/
 - results/
 
+Do not recursively scan the full `data/` directory. Do not read
+`data/archive/`, `data/data/`, or `data/notebooks/` during routine work.
+Do not fully load parquet, pt, pkl, npy, html, pdf, png, or gif files for
+inspection. For parquet diagnostics, use `pyarrow.parquet.ParquetFile` and
+read only schema/metadata unless the user explicitly allows a full analysis
+run.
+
 Raw files are expected locally at:
 
 data/phase3A/phase3aexports/
@@ -55,6 +62,8 @@ src/napi2b_vkr/
   consensus.py
   plots.py
 
+Avoid top-level analysis modules under `src/`; import from `napi2b_vkr`.
+
 ## Main pipeline
 
 1. Inspect Phase3A files.
@@ -76,6 +85,8 @@ src/napi2b_vkr/
 - Prefer functions over notebook-only code.
 - Notebooks should call functions from src/napi2b_vkr.
 - Handle unknown column names with diagnostics and clear errors.
+- Start with lightweight project setup and data diagnostics before running
+  full graph construction, clustering, or centrality calculations.
 - Never commit data files, parquet files, pt files, pkl files, npy files, html reports, pdf reports, or generated figures from data/archive.
 
 ## Expected notebooks
