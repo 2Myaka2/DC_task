@@ -91,6 +91,12 @@ Or run the diagnostic script directly:
 python3 scripts/inspect_phase3a.py --base-dir data/phase3A/phase3aexports --condition normal
 ```
 
+For a small graph-building smoke test on the first few frames:
+
+```bash
+python3 scripts/build_frame_graphs_smoke.py --base-dir data/phase3A/phase3aexports --condition normal --max-frames 5
+```
+
 Full graph construction, clustering, and centrality calculations may be
 expensive. Run them deliberately after the data diagnostics pass.
 
