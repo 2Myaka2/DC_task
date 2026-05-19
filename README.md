@@ -85,6 +85,12 @@ report = inspect_phase3a_dataset("data/phase3A/phase3aexports", "normal")
 report["parquet"]["schema"]
 ```
 
+Or run the diagnostic script directly:
+
+```bash
+python3 scripts/inspect_phase3a.py --base-dir data/phase3A/phase3aexports --condition normal
+```
+
 Full graph construction, clustering, and centrality calculations may be
 expensive. Run them deliberately after the data diagnostics pass.
 

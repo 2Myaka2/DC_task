@@ -155,6 +155,37 @@ def get_parquet_metadata(path: str | Path) -> dict[str, Any]:
     }
 
 
+def get_csv_diagnostics(path: str | Path) -> dict[str, Any]:
+    """Return shape and columns for a CSV file."""
+
+    frame = read_csv(path)
+    return {
+        "path": str(Path(path)),
+        "shape": frame.shape,
+        "columns": list(frame.columns),
+    }
+
+
+def get_parquet_preview(path: str | Path, n_rows: int = 5) -> dict[str, Any]:
+    """Read a small parquet preview through a tiny batch."""
+
+    parquet_file = pq.ParquetFile(Path(path))
+    batch_iter = parquet_file.iter_batches(batch_size=n_rows)
+    try:
+        batch = next(batch_iter)
+    except StopIteration:
+        preview = pd.DataFrame(columns=parquet_file.schema_arrow.names)
+    else:
+        preview = batch.to_pandas()
+
+    return {
+        "path": str(Path(path)),
+        "n_rows": n_rows,
+        "columns": list(preview.columns),
+        "preview": preview.to_dict(orient="records"),
+    }
+
+
 def inspect_phase3a_dataset(
     base_dir: str | Path | None = None,
     condition: str = "normal",

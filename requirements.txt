@@ -7,4 +7,5 @@ matplotlib
 seaborn
 pyarrow
 tqdm
-jupyter
+ipykernel
+notebook
