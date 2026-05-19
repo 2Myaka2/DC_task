@@ -97,6 +97,24 @@ For a small graph-building smoke test on the first few frames:
 python3 scripts/build_frame_graphs_smoke.py --base-dir data/phase3A/phase3aexports --condition normal --max-frames 5
 ```
 
+For graph feature calculation in a quick smoke mode:
+
+```bash
+python3 scripts/compute_graph_features.py --base-dir data/phase3A/phase3aexports --condition normal --max-frames 5 --output-dir results/tables
+```
+
+To include centrality averages explicitly:
+
+```bash
+python3 scripts/compute_graph_features.py --base-dir data/phase3A/phase3aexports --condition normal --compute-centrality --output-dir results/tables
+```
+
+To run clustering on a precomputed feature table:
+
+```bash
+python3 scripts/run_clustering.py --features-path results/tables/frame_features_normal_smoke.csv --condition normal --output-dir results/tables
+```
+
 Full graph construction, clustering, and centrality calculations may be
 expensive. Run them deliberately after the data diagnostics pass.
 
