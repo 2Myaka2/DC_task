@@ -62,7 +62,15 @@ def plot_cluster_size_bar(
     figure_path = _prepare_figure_path(out_path)
 
     fig, ax = plt.subplots(figsize=(7, 5), dpi=DEFAULT_FIGURE_DPI)
-    sns.barplot(data=counts, x="cluster", y="n_frames", palette="tab10", ax=ax)
+    sns.barplot(
+        data=counts,
+        x="cluster",
+        y="n_frames",
+        hue="cluster",
+        palette="tab10",
+        legend=False,
+        ax=ax,
+    )
     ax.set_title("Frame Counts per Cluster")
     ax.set_xlabel("Cluster")
     ax.set_ylabel("Frames")

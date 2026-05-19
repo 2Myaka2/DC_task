@@ -3,6 +3,11 @@ results/
 *.parquet
 *.pt
 *.pkl
+*.npy
+*.png
+*.html
+*.pdf
+*.gif
 __pycache__/
 .ipynb_checkpoints/
 .venv/

@@ -6,7 +6,10 @@ NaPi2b transporter.
 
 Each trajectory frame is represented as a protein residue contact graph:
 residues are nodes, residue-residue contacts are edges, and graph-level
-features are used for clustering and interpretation.
+features are used for clustering and interpretation. The full pipeline supports
+Phase3A inspection, per-frame graph construction, graph feature extraction,
+clustering, consensus network construction, cluster interpretation, and figure
+generation.
 
 ## Local Data Layout
 
@@ -76,7 +79,7 @@ notebooks/05_cluster_interpretation.ipynb
 The notebooks should import functions from `src/napi2b_vkr/` rather than
 duplicating pipeline logic.
 
-For lightweight Phase3A checks without loading the full parquet data:
+Lightweight inspection:
 
 ```python
 from napi2b_vkr.io import inspect_phase3a_dataset
@@ -91,7 +94,7 @@ Or run the diagnostic script directly:
 python3 scripts/inspect_phase3a.py --base-dir data/phase3A/phase3aexports --condition normal
 ```
 
-For a small graph-building smoke test on the first few frames:
+Smoke and debug examples:
 
 ```bash
 python3 scripts/build_frame_graphs_smoke.py --base-dir data/phase3A/phase3aexports --condition normal --max-frames 5
@@ -103,32 +106,68 @@ For graph feature calculation in a quick smoke mode:
 python3 scripts/compute_graph_features.py --base-dir data/phase3A/phase3aexports --condition normal --max-frames 5 --output-dir results/tables
 ```
 
-To include centrality averages explicitly:
+Main examples:
 
 ```bash
 python3 scripts/compute_graph_features.py --base-dir data/phase3A/phase3aexports --condition normal --compute-centrality --output-dir results/tables
+python3 scripts/compute_graph_features.py --base-dir data/phase3A/phase3aexports --condition tumor --compute-centrality --output-dir results/tables
 ```
-
-To run clustering on a precomputed feature table:
 
 ```bash
-python3 scripts/run_clustering.py --features-path results/tables/frame_features_normal_smoke.csv --condition normal --output-dir results/tables
+python3 scripts/run_clustering.py --features-path results/tables/frame_features_normal.csv --condition normal --output-dir results/tables
+python3 scripts/run_clustering.py --features-path results/tables/frame_features_tumor.csv --condition tumor --output-dir results/tables
 ```
-
-To build consensus graphs, interpretation tables, and figures:
 
 ```bash
 python3 scripts/interpret_clusters.py --base-dir data/phase3A/phase3aexports --condition normal --labels-path results/tables/cluster_labels_normal.csv --features-path results/tables/frame_features_normal.csv --pca-path results/tables/pca_projection_normal.csv --threshold 0.5 --output-dir results
+python3 scripts/interpret_clusters.py --base-dir data/phase3A/phase3aexports --condition tumor --labels-path results/tables/cluster_labels_tumor.csv --features-path results/tables/frame_features_tumor.csv --pca-path results/tables/pca_projection_tumor.csv --threshold 0.5 --output-dir results
 ```
-
-To print a concise textual summary of clustering outputs:
 
 ```bash
 python3 scripts/summarize_clustering.py --condition normal --scores-path results/tables/clustering_scores_normal.csv --labels-path results/tables/cluster_labels_normal.csv --features-path results/tables/frame_features_normal.csv --residue-centrality-path results/tables/residue_centrality_normal.csv
+python3 scripts/summarize_clustering.py --condition tumor --scores-path results/tables/clustering_scores_tumor.csv --labels-path results/tables/cluster_labels_tumor.csv --features-path results/tables/frame_features_tumor.csv --residue-centrality-path results/tables/residue_centrality_tumor.csv
 ```
 
-Full graph construction, clustering, and centrality calculations may be
-expensive. Run them deliberately after the data diagnostics pass.
+## Full Reproducible Run
+
+```bash
+python3 scripts/compute_graph_features.py --base-dir data/phase3A/phase3aexports --condition normal --output-dir results/tables
+python3 scripts/compute_graph_features.py --base-dir data/phase3A/phase3aexports --condition tumor --output-dir results/tables
+
+python3 scripts/run_clustering.py --features-path results/tables/frame_features_normal.csv --condition normal --output-dir results/tables
+python3 scripts/run_clustering.py --features-path results/tables/frame_features_tumor.csv --condition tumor --output-dir results/tables
+
+python3 scripts/interpret_clusters.py --base-dir data/phase3A/phase3aexports --condition normal --labels-path results/tables/cluster_labels_normal.csv --features-path results/tables/frame_features_normal.csv --pca-path results/tables/pca_projection_normal.csv --threshold 0.5 --output-dir results
+python3 scripts/interpret_clusters.py --base-dir data/phase3A/phase3aexports --condition tumor --labels-path results/tables/cluster_labels_tumor.csv --features-path results/tables/frame_features_tumor.csv --pca-path results/tables/pca_projection_tumor.csv --threshold 0.5 --output-dir results
+```
+
+Observed full-run outcomes on the local Phase3A dataset:
+- `normal`: 301 frames, selected clustering `kmeans`, `n_clusters=3`
+- `tumor`: 301 frames, selected clustering `kmeans`, `n_clusters=2`
+
+## Expected Outputs
+
+Tables:
+
+```text
+results/tables/frame_features_{condition}.csv
+results/tables/clustering_scores_{condition}.csv
+results/tables/cluster_labels_{condition}.csv
+results/tables/pca_projection_{condition}.csv
+results/tables/cluster_summary_{condition}.csv
+results/tables/consensus_graph_metrics_{condition}.csv
+results/tables/residue_centrality_{condition}.csv
+results/tables/region_involvement_{condition}.csv
+```
+
+Figures:
+
+```text
+results/figures/pca_clusters_{condition}.png
+results/figures/cluster_sizes_{condition}.png
+results/figures/feature_heatmap_{condition}.png
+results/figures/consensus_network_cluster_*_{condition}.png
+```
 
 ## Package Structure
 
@@ -143,6 +182,14 @@ src/napi2b_vkr/
   plots.py
 ```
 
-Current setup work focuses on project structure and Phase3A diagnostics. The
-later notebooks will save frame features, clustering labels and scores,
-consensus graph summaries, centrality tables, and figures under `results/`.
+The current pipeline supports Phase3A inspection, per-frame graph
+construction, graph feature extraction, clustering, consensus network
+construction, cluster interpretation, and figure generation.
+
+## Notes
+
+- `data/` and `results/` are ignored by Git.
+- Generated tables and figures are local artifacts.
+- Full centrality calculation over all frame graphs can be expensive.
+- Centrality-based biological interpretation is mainly computed on consensus graphs.
+- Phase3B outputs are optional reference materials and are not required for the main pipeline.
